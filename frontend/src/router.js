@@ -107,6 +107,16 @@ const routes = [
     name: 'Login',
     component: () => import('@/pages/Login.vue'),
   },
+  {
+    path: '/doctype/:doctype',
+    name: 'Doctype',
+    component: () => import('@/pages/DocList.vue'),
+  },
+  {
+    path: '/doc/:doctype/:docId',
+    name: 'Doc',
+    component: () => import(`@/pages/Doc.vue`),
+  },
 ]
 
 const handleMobileView = (componentName) => {

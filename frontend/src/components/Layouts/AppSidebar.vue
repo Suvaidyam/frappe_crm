@@ -113,16 +113,17 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon ,call} from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, h } from 'vue'
+import { computed, h, onMounted, ref } from 'vue'
+
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
-const links = [
+const links = ref([
   {
     label: 'Leads',
     icon: LeadsIcon,
@@ -163,7 +164,7 @@ const links = [
     icon: Email2Icon,
     to: 'Email Templates',
   },
-]
+])
 
 const allViews = computed(() => {
   let _views = [
@@ -171,7 +172,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links,
+      views: links.value,
     },
   ]
   if (getPublicViews().length) {
@@ -181,8 +182,8 @@ const allViews = computed(() => {
       views: parseView(getPublicViews()),
     })
   }
-
   if (getPinnedViews().length) {
+
     _views.push({
       name: 'Pinned views',
       opened: true,
@@ -191,7 +192,19 @@ const allViews = computed(() => {
   }
   return _views
 })
-
+onMounted(async() => {
+  let views = await call('crm.api.list.get_list_views');
+  links.value.push(...views.map((view) => {
+    return {
+      label: view.label,
+      icon: view.icon,
+      to: {
+        name: 'Doctype',
+        params: { doctype: view.document_type},
+      },
+    }
+  }))
+});
 function parseView(views) {
   return views.map((view) => {
     return {
