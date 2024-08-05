@@ -14,34 +14,11 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('lead', updateField)">
-        <template #default="{ open }">
-          <Button
-            :label="lead.data.status"
-            :class="getLeadStatus(lead.data.status).colorClass"
-          >
-            <template #prefix>
-              <IndicatorIcon />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4"
-              />
-            </template>
-          </Button>
-        </template>
-      </Dropdown>
-      <Button
-        :label="__('Convert to Deal')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <Activities
+      <DocActivities
         ref="activities"
         :doctype="route.params.doctype"
         :title="tab.name"
@@ -156,11 +133,6 @@
           </div>
         </template>
       </FileUploader>
-      <SLASection
-        v-if="lead.data.sla_status"
-        v-model="lead.data"
-        @updateField="updateField"
-      />
       <div
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -200,72 +172,6 @@
     :doc="lead.data"
     :doctype="route.params.doctype"
   />
-  <Dialog
-    v-model="showConvertToDealModal"
-    :options="{
-      title: __('Convert to Deal'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-gray-600">
-        <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Organization') }}</label>
-      </div>
-      <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingOrganizationChecked" />
-        </div>
-        <Link
-          v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{
-            __(
-              'New organization will be created based on the data in details section',
-            )
-          }}
-        </div>
-      </div>
-
-      <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
-        <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Contact') }}</label>
-      </div>
-      <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingContactChecked" />
-        </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{ __("New contact will be created based on the person's details") }}
-        </div>
-      </div>
-    </template>
-  </Dialog>
   <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
 </template>
 <script setup>
@@ -285,7 +191,7 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Activities from '@/components/Activities/Activities.vue'
+import DocActivities from '@/components/Activities/DocActivities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
@@ -359,7 +265,7 @@ onMounted(async () => {
   let additional_tabs = await call('crm.api.list.get_tabs', {
     name: route.params.doctype,
   })
-  console.log(additional_tabs,tabs,'additional_tabs')
+  // console.log(additional_tabs,tabs,'additional_tabs')
   if (additional_tabs) {
       additional_tabs.forEach((tab) => {
         tabs.value.push({
@@ -427,7 +333,7 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: __(route.params.doctype), route: { name: 'Doc' } }]
+  let items = [{ label: __(route.params.doctype), route: { name: 'Doctype' ,params: { doctype:route.params.doctype }} }]
   items.push({
     label: lead.data.name || __('Untitled'),
     route: { name: 'Doc', params: { doctype:route.params.doctype,docId: lead.data.name }},
@@ -541,47 +447,47 @@ async function convertToDeal(updated) {
     return
   }
 
-  if (existingOrganizationChecked.value && !existingOrganization.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing organization'),
-      icon: 'x',
-      iconClasses: 'text-red-600',
-    })
-    return
-  }
+  // if (existingOrganizationChecked.value && !existingOrganization.value) {
+  //   createToast({
+  //     title: __('Error'),
+  //     text: __('Please select an existing organization'),
+  //     icon: 'x',
+  //     iconClasses: 'text-red-600',
+  //   })
+  //   return
+  // }
 
-  if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
-    lead.data.email_id = getContactByName(existingContact.value).email_id
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
-    existingContactChecked.value = false
-    valueUpdated = true
-  }
+  // if (existingContactChecked.value && existingContact.value) {
+  //   lead.data.salutation = getContactByName(existingContact.value).salutation
+  //   lead.data.first_name = getContactByName(existingContact.value).first_name
+  //   lead.data.last_name = getContactByName(existingContact.value).last_name
+  //   lead.data.email_id = getContactByName(existingContact.value).email_id
+  //   lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
+  //   existingContactChecked.value = false
+  //   valueUpdated = true
+  // }
 
-  if (existingOrganizationChecked.value && existingOrganization.value) {
-    lead.data.organization = existingOrganization.value
-    existingOrganizationChecked.value = false
-    valueUpdated = true
-  }
+  // if (existingOrganizationChecked.value && existingOrganization.value) {
+  //   lead.data.organization = existingOrganization.value
+  //   existingOrganizationChecked.value = false
+  //   valueUpdated = true
+  // }
 
-  if (valueUpdated) {
-    updateLead(
-      {
-        salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
-        email_id: lead.data.email_id,
-        mobile_no: lead.data.mobile_no,
-        organization: lead.data.organization,
-      },
-      '',
-      () => convertToDeal(true),
-    )
-    showConvertToDealModal.value = false
-  } else {
+  // if (valueUpdated) {
+  //   updateLead(
+  //     {
+  //       salutation: lead.data.salutation,
+  //       first_name: lead.data.first_name,
+  //       last_name: lead.data.last_name,
+  //       email_id: lead.data.email_id,
+  //       mobile_no: lead.data.mobile_no,
+  //       organization: lead.data.organization,
+  //     },
+  //     '',
+  //     () => convertToDeal(true),
+  //   )
+  //   showConvertToDealModal.value = false
+  // } else {
     // let deal = await call(
     //   'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
     //   {
@@ -595,7 +501,7 @@ async function convertToDeal(updated) {
     //   }
     //   router.push({ name: 'Deal', params: { dealId: deal } })
     // }
-  }
+  // }
 }
 
 const activities = ref(null)

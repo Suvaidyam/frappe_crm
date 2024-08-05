@@ -1,20 +1,19 @@
 import frappe
 from frappe import _
-
 from crm.api.doc import get_fields_meta, get_assigned_users
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
+from frappe.utils.caching import redis_cache
+from frappe.desk.form.load import get_docinfo
+import json
 
 @frappe.whitelist()
 def get_doc(doctype,name):
 	Doc = frappe.qb.DocType(doctype)
-
 	query = frappe.qb.from_(Doc).select("*").where(Doc.name == name).limit(1)
-
 	doc = query.run(as_dict=True)
 	if not len(doc):
 		frappe.throw(_("Doc not found"), frappe.DoesNotExistError)
 	doc = doc.pop()
-
 	doc["doctype"] = doctype
 	doc["fields_meta"] = get_fields_meta(doctype)
 	doc["_form_script"] = get_form_script(doctype)
@@ -22,13 +21,147 @@ def get_doc(doctype,name):
 	return doc
 
 @frappe.whitelist()
-def get_activities(name):
-	if frappe.db.exists("CRM Deal", name):
-		return get_deal_activities(name)
-	elif frappe.db.exists("CRM Lead", name):
-		return get_lead_activities(name)
-	else:
-		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
+def get_activities(doctype, name):
+    if frappe.db.exists(doctype, name):
+        get_docinfo('', doctype, name)
+        docinfo = frappe.response["docinfo"]
+        doc_meta = frappe.get_meta(doctype)
+        doc_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in doc_meta.fields}
+        doc = frappe.db.get_value(doctype, name, ["creation", "owner"])
+        activities = [{
+            "activity_type": "creation",
+            "creation": doc[0],
+            "owner": doc[1],
+            "data": "created this item",
+            "is_lead": False
+        }]
+        
+        docinfo.versions.reverse()
+        for version in docinfo.versions:
+            data = json.loads(version.data)
+            if not data.get("changed"):
+                continue
+
+            change = data.get("changed")[0]
+            if not change:
+                continue
+
+            field = doc_fields.get(change[0])
+            if not field or (not change[1] and not change[2]):
+                continue
+
+            field_label = field.get("label") or change[0]
+            field_option = field.get("options")
+
+            activity_type = "changed"
+            data = {
+                "field": change[0],
+                "field_label": field_label,
+                "old_value": change[1],
+                "value": change[2],
+            }
+
+            if not change[1] and change[2]:
+                activity_type = "added"
+                data = {
+                    "field": change[0],
+                    "field_label": field_label,
+                    "value": change[2],
+                }
+            elif change[1] and not change[2]:
+                activity_type = "removed"
+                data = {
+                    "field": change[0],
+                    "field_label": field_label,
+                    "value": change[1],
+                }
+
+            activity = {
+                "activity_type": activity_type,
+                "creation": version.creation,
+                "owner": version.owner,
+                "data": data,
+                "is_lead": True,
+                "options": field_option,
+            }
+            activities.append(activity)
+
+        # Handle comments
+        for comment in docinfo.comments:
+            activity = {
+                "name": comment.name,
+                "activity_type": "comment",
+                "creation": comment.creation,
+                "owner": comment.owner,
+                "content": comment.content,
+                "attachments": get_attachments('Comment', comment.name),
+                "is_lead": True,
+            }
+            activities.append(activity)
+
+        # Handle communications
+        for communication in docinfo.communications + docinfo.automated_messages:
+            activity = {
+                "activity_type": "communication",
+                "communication_type": communication.communication_type,
+                "creation": communication.creation,
+                "data": {
+                    "subject": communication.subject,
+                    "content": communication.content,
+                    "sender_full_name": communication.sender_full_name,
+                    "sender": communication.sender,
+                    "recipients": communication.recipients,
+                    "cc": communication.cc,
+                    "bcc": communication.bcc,
+                    "attachments": get_attachments('Communication', communication.name),
+                    "read_by_recipient": communication.read_by_recipient,
+                },
+                "is_lead": True,
+            }
+            activities.append(activity)
+
+        notes = get_linked_notes(doctype,name)
+        tasks = get_linked_tasks(doctype,name)
+        
+        activities.sort(key=lambda x: x["creation"], reverse=True)
+        return activities,[], notes, tasks
+    else:
+        frappe.throw(_("Activities not found"), frappe.DoesNotExistError)
+
+@redis_cache()
+def get_attachments(doctype, name):
+	return frappe.db.get_all(
+		"File",
+		filters={"attached_to_doctype": doctype, "attached_to_name": name},
+		fields=["name", "file_name", "file_url", "file_size", "is_private"],
+	)
+
+def get_linked_notes(doctype,name):
+	notes = frappe.db.get_all(
+		"FCRM Note",
+		filters={"reference_doctype":doctype,"reference_docname": name},
+		fields=['name', 'title', 'content', 'owner', 'modified'],
+	)
+	return notes or []
+
+def get_linked_tasks(doctype,name):
+	tasks = frappe.db.get_all(
+		"CRM Task",
+		filters={"reference_doctype":doctype,"reference_docname": name},
+		fields=[
+			"name",
+			"title",
+			"description",
+			"assigned_to",
+			"assigned_to",
+			"due_date",
+			"priority",
+			"status",
+			"modified",
+		],
+	)
+	return tasks or []
+
 @frappe.whitelist()
 def get_fields_layout(doctype: str, type: str):
 	sections = []

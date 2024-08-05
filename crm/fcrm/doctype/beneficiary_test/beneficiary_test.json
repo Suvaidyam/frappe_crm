@@ -9,6 +9,7 @@
   "name1",
   "gender",
   "cv",
+  "image",
   "eligible_for_aadhar"
  ],
  "fields": [
@@ -33,11 +34,16 @@
    "fieldname": "eligible_for_aadhar",
    "fieldtype": "Check",
    "label": "Eligible For Aadhar"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-04 17:54:54.072064",
+ "modified": "2024-08-05 12:22:43.531436",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Beneficiary Test",
