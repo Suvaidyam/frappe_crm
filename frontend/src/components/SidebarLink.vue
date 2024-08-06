@@ -69,9 +69,14 @@ const props = defineProps({
 function handleClick() {
   if (!props.to) return
   if (typeof props.to === 'object') {
+    if(props.to?.query){
+      props.to.query.t = Date.now()
+    }else{
+      props.to['query'] = {'t': Date.now()}
+    }
     router.push(props.to)
   } else {
-    router.push({ name: props.to })
+    router.push({ name: props.to, query:{t:Date.now()} })
   }
   if (isMobileView.value) {
     mobileSidebarOpened.value = false
@@ -79,6 +84,9 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
+  if (route?.params?.doctype) {
+    return route.params.doctype == props.to?.params?.doctype
+  }
   if (route.query.view) {
     return route.query.view == props.to?.query?.view
   }

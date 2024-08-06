@@ -83,6 +83,7 @@ const sections = createResource({
     })
   },
 })
+console.log(sections,'sections')
 
 const lead = reactive({
   // salutation: '',
@@ -113,13 +114,13 @@ const createLead = createResource({
   },
 })
 
-const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
-  if (!lead.status) {
-    lead.status = statuses[0].value
-  }
-  return statuses
-})
+// const leadStatuses = computed(() => {
+//   let statuses = statusOptions('lead')
+//   if (!lead.status) {
+//     lead.status = statuses[0].value
+//   }
+//   return statuses
+// })
 
 function createNewLead() {
   if (lead.website && !lead.website.startsWith('http')) {

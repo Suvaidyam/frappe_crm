@@ -19,9 +19,10 @@
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <DocActivities
+        :key="tabIndex"
         ref="activities"
-        :doctype="route.params.doctype"
-        :title="tab.name"
+        :doctype="tab.doctype ?? route.params.doctype"
+        :title="tab.label"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
@@ -272,6 +273,7 @@ onMounted(async () => {
           name: tab.name,
           label: tab.label,
           icon: tab.icon,
+          doctype:tab.doc_type
         })
       })
   }

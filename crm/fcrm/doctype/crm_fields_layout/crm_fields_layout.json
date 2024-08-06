@@ -34,6 +34,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "[\n  {\n    \"label\": \"\",\n    \"fields\": [\n     \n    ],\n    \"hideLabel\": true\n  }\n]",
    "fieldname": "layout",
    "fieldtype": "Code",
    "label": "Layout",
@@ -46,7 +47,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-13 15:10:01.612851",
+ "modified": "2024-08-06 16:19:11.495643",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Fields Layout",

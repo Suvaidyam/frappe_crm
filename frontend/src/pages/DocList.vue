@@ -4,31 +4,29 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="leadsListView?.customListActions"
-        :actions="leadsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showLeadModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      <CustomActions v-if="leadsListView?.customListActions" :actions="leadsListView.customListActions" />
+      <Button variant="solid" :label="__('Create')" @click="showLeadModal = true">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
       </Button>
     </template>
   </LayoutHeader>
-  <ViewControls
+  <!-- {{ leads }}
+  <ListControl
+    :key="route.params.doctype"
     ref="viewControls"
-    v-model="leads"
-    v-model:loadMore="loadMore"
-    v-model:resizeColumn="triggerResize"
-    v-model:updatedPageCount="updatedPageCount"
+    :listData="leads"
+    :loadMore="loadMore"
+    :triggerResize="triggerResize"
+    :updatedPageCount="updatedPageCount"
     :doctype="route.params.doctype"
-    :filters="{}"
-    :options="{
+
+  /> -->
+  <ViewControls :key="route.params.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
+    v-model:updatedPageCount="updatedPageCount" :doctype="route.params.doctype" :filters="{}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
-    }"
-  />
+    }" />
   <!-- <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
@@ -177,57 +175,30 @@
       </div>
     </template>
   </KanbanView> -->
-  <DocsListView
-    ref="leadsListView"
-    v-if="leads.data && rows.length"
-    v-model="leads.data.page_length_count"
-    v-model:list="leads"
-    :rows="rows"
-    :columns="leads.data.columns"
-    :options="{
+  <DocsListView ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
+    v-model:list="leads" :rows="rows" :columns="leads.data.columns" :options="{
       showTooltip: false,
       resizeColumn: true,
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,
-    }"
-    @loadMore="() => loadMore++"
-    @columnWidthUpdated="() => triggerResize++"
-    @updatePageCount="(count) => (updatedPageCount = count)"
-    @applyFilter="(data) => viewControls.applyFilter(data)"
-    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
-    @likeDoc="(data) => viewControls.likeDoc(data)"
-  />
+    }" @loadMore="() => loadMore++" @columnWidthUpdated="() => triggerResize++"
+    @updatePageCount="(count) => (updatedPageCount = count)" @applyFilter="(data) => viewControls.applyFilter(data)"
+    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)" @likeDoc="(data) => viewControls.likeDoc(data)" />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
-    >
+    <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
       <LeadsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Leads')]) }}</span>
+      <span>{{ __('No {0} Found', [__(route.params.doctype)]) }}</span>
       <Button :label="__('Create')" @click="showLeadModal = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
       </Button>
     </div>
   </div>
-  <DocModal
-    v-if="showLeadModal"
-    v-model="showLeadModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :defaults="defaults"
-  />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    :doctype="route.params.doctype"
-    :doc="docname"
-  />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    :doctype="route.params.doctype"
-    :doc="docname"
-  />
+  <DocModal v-if="showLeadModal" v-model="showLeadModal" v-model:quickEntry="showQuickEntryModal"
+    :defaults="defaults" />
+  <NoteModal v-if="showNoteModal" v-model="showNoteModal" :note="note" :doctype="route.params.doctype" :doc="docname" />
+  <TaskModal v-if="showTaskModal" v-model="showTaskModal" :task="task" :doctype="route.params.doctype" :doc="docname" />
   <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
 </template>
 
@@ -249,6 +220,7 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import ListControl from '@/components/Layouts/ListControl.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
@@ -257,16 +229,23 @@ import { callEnabled } from '@/composables/settings'
 import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
 import { Breadcrumbs, Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, reactive, h } from 'vue'
+import { ref, computed, reactive, h, watch } from 'vue'
 
-const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
+const route = useRoute();
 
+const breadcrumbs = reactive([
+  { label: __(route.params.doctype), route: { name: 'Doctype', params: { doctype: route.params.doctype } } }
+]);
+
+watch(() => route.params.doctype, (newDoctype) => {
+  breadcrumbs[0].label = __(newDoctype);
+  breadcrumbs[0].route = { name: 'Doctype', params: { doctype: newDoctype } };
+});
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
-const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
@@ -309,10 +288,8 @@ const rows = computed(() => {
 
 function getGroupedByRows(listRows, groupByField) {
   let groupedRows = []
-
   groupByField.options?.forEach((option) => {
     let filteredRows = []
-
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.name])
     } else {

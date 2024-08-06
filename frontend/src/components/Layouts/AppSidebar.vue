@@ -154,11 +154,11 @@ const links = ref([
     icon: TaskIcon,
     to: 'Tasks',
   },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
+  // {
+  //   label: 'Call Logs',
+  //   icon: PhoneIcon,
+  //   to: 'Call Logs',
+  // },
   {
     label: 'Email Templates',
     icon: Email2Icon,
@@ -201,6 +201,7 @@ onMounted(async() => {
       to: {
         name: 'Doctype',
         params: { doctype: view.document_type},
+        query: { view: 'list'}
       },
     }
   }))
