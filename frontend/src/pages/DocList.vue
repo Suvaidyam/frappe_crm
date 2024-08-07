@@ -12,18 +12,7 @@
       </Button>
     </template>
   </LayoutHeader>
-  <!-- {{ leads }}
-  <ListControl
-    :key="route.params.doctype"
-    ref="viewControls"
-    :listData="leads"
-    :loadMore="loadMore"
-    :triggerResize="triggerResize"
-    :updatedPageCount="updatedPageCount"
-    :doctype="route.params.doctype"
-
-  /> -->
-  <ViewControls :key="route.params.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
+    <ViewControls :key="route.params.doctype" :ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount" :doctype="route.params.doctype" :filters="{}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }" />
@@ -220,7 +209,6 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import DocQuickEntryModal from '@/components/Settings/DocQuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import ListControl from '@/components/Layouts/ListControl.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
@@ -246,14 +234,10 @@ const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
-
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
 const showQuickEntryModal = ref(false)
-
 const defaults = reactive({})
-
-// leads data is loaded in the ViewControls component
 const leads = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)

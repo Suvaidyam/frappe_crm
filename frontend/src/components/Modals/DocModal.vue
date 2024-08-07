@@ -68,18 +68,7 @@ const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', route.params.doctype],
   params: { doctype: route.params.doctype, type: 'Quick Entry' },
-  auto: true,
-  transform: (data) => {
-    return data.forEach((section) => {
-      section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = leadStatuses.value
-          field.prefix = getLeadStatus(lead.status).iconColorClass
-        }
-      })
-    })
-  },
+  auto: true
 })
 
 const lead = reactive({
@@ -111,14 +100,6 @@ const createLead = createResource({
   },
 })
 
-// const leadStatuses = computed(() => {
-//   let statuses = statusOptions('lead')
-//   if (!lead.status) {
-//     lead.status = statuses[0].value
-//   }
-//   return statuses
-// })
-
 function createNewLead() {
   if (lead.website && !lead.website.startsWith('http')) {
     lead.website = 'https://' + lead.website
@@ -126,7 +107,14 @@ function createNewLead() {
 
   createLead.submit(lead, {
     validate() {
-      // error.value = null
+      error.value = null
+      return sections.data.forEach((section) => {
+        return section.fields.forEach((field) => {
+          if (field.mandatory && !lead[field.name]) {
+            return error.value = `${field.label} is required`;
+          }
+        });
+      });
       // if (!lead.first_name) {
       //   error.value = __('First Name is mandatory')
       //   return error.value

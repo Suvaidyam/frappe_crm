@@ -210,7 +210,6 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 		"Section Break",
 		"Column Break",
 	]
-
 	if restricted_fieldtypes:
 		restricted_fieldtypes = frappe.parse_json(restricted_fieldtypes)
 		not_allowed_fieldtypes += restricted_fieldtypes
@@ -250,3 +249,11 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	for field in fields:
 		fields_meta[field.get('fieldname')] = field
 	return fields_meta
+
+@frappe.whitelist()
+def get_link_fields(doctype,connections=False):
+    if connections:
+        return frappe.get_meta(doctype).links
+    else:
+        fields = [field for field in frappe.get_meta(doctype).fields if field.fieldtype  == 'Link']
+        return fields
