@@ -44,7 +44,7 @@
         >
           <div class="flex flex-1 flex-col justify-between overflow-hidden">
             <div class="flex flex-col overflow-y-auto">
-              <SidePanelLayoutBuilder
+              <DocSidePanelLayoutBuilder
                 v-if="!preview"
                 :sections="sections.data"
                 :doctype="_doctype"
@@ -71,7 +71,7 @@
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import Resizer from '@/components/Resizer.vue'
-import SidePanelLayoutBuilder from '@/components/Settings/SidePanelLayoutBuilder.vue'
+import DocSidePanelLayoutBuilder from '@/components/Settings/DocSidePanelLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'

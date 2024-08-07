@@ -41,7 +41,7 @@
           <div
             class="rounded-xl h-full inline-block w-full px-4 pb-6 pt-5 sm:px-6 transform overflow-y-auto bg-white text-left align-middle shadow-xl transition-all"
           >
-            <QuickEntryLayoutBuilder
+            <DocQuickEntryLayoutBuilder
               v-if="!preview"
               :sections="sections.data"
               :doctype="_doctype"
@@ -55,7 +55,7 @@
 </template>
 <script setup>
 import Fields from '@/components/Fields.vue'
-import QuickEntryLayoutBuilder from '@/components/Settings/QuickEntryLayoutBuilder.vue'
+import DocQuickEntryLayoutBuilder from '@/components/Settings/DocQuickEntryLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'

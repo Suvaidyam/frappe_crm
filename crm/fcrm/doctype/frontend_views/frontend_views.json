@@ -8,7 +8,6 @@
  "field_order": [
   "label",
   "document_type",
-  "side_form_layout_link",
   "icon",
   "tabs"
  ],
@@ -42,19 +41,11 @@
    "fieldtype": "Table",
    "label": "Tabs",
    "options": "Frontend Views Tab"
-  },
-  {
-   "fieldname": "side_form_layout_link",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "SIde Form Layout Link",
-   "options": "CRM Fields Layout",
-   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-07 12:22:59.350054",
+ "modified": "2024-08-07 12:55:07.985885",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Frontend Views",

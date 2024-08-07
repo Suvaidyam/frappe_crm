@@ -1,4 +1,5 @@
 <template>
+  <!-- additional tabs -->
   <div v-if="props.doctype != route.params.doctype">
     <ViewControls :key="props.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount" :doctype="props.doctype" :filters="{}" :options="{
@@ -25,6 +26,7 @@
       </Button>
     </div>
   </div>
+  <!-- existing tabs -->
   <div v-else class="flex flex-col flex-1 overflow-y-auto">
       <ActivityHeader v-model="tabIndex" v-model:showWhatsappTemplates="showWhatsappTemplates" :tabs="tabs" :title="title"
         :doc="doc" :emailBox="emailBox" :whatsappBox="whatsappBox" :modalRef="modalRef" />

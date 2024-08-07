@@ -135,7 +135,7 @@
         </template>
       </FileUploader>
       <div
-        v-if="fieldsLayout.data"
+        v-if="fieldsLayout.data.length"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <div class="flex flex-col overflow-y-auto">
@@ -163,6 +163,19 @@
             </Section>
           </div>
         </div>
+      </div>
+      <div v-else class="flex flex-1 flex-col justify-between overflow-hidden my-2">
+        <Section :is-opened="false" label="Add Layout">
+          <template v-if="isManager()" #actions>
+            <Button
+              variant="ghost"
+              class="w-7 mr-2"
+              @click="showSidePanelModal = true"
+            >
+              <EditIcon class="h-4 w-4" />
+            </Button>
+          </template>
+        </Section>
       </div>
     </Resizer>
   </div>
