@@ -23,7 +23,7 @@
           </div>
         </div>
         <div>
-          <Fields v-if="sections.data" :sections="sections.data" :data="lead" />
+          <DocFields v-if="sections.data" :sections="sections.data" :data="lead" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -43,7 +43,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import DocFields from '@/components/DocFields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { createResource } from 'frappe-ui'
@@ -66,7 +66,7 @@ const isLeadCreating = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  // cache: ['quickEntryFields', 'CRM Lead'],
+  cache: ['quickEntryFields', route.params.doctype],
   params: { doctype: route.params.doctype, type: 'Quick Entry' },
   auto: true,
   transform: (data) => {
@@ -76,14 +76,11 @@ const sections = createResource({
           field.type = 'Select'
           field.options = leadStatuses.value
           field.prefix = getLeadStatus(lead.status).iconColorClass
-        } else if (field.name == 'lead_owner') {
-          field.type = 'User'
         }
       })
     })
   },
 })
-console.log(sections,'sections')
 
 const lead = reactive({
   // salutation: '',
@@ -180,10 +177,10 @@ function openQuickEntryModal() {
   })
 }
 
-onMounted(() => {
-  Object.assign(lead, props.defaults)
-  if (!lead.lead_owner) {
-    lead.lead_owner = getUser().name
-  }
-})
+// onMounted(() => {
+//   Object.assign(lead, props.defaults)
+//   if (!lead.lead_owner) {
+//     lead.lead_owner = getUser().name
+//   }
+// })
 </script>
