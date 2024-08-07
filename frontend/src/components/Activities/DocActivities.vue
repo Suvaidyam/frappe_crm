@@ -2,7 +2,7 @@
   <!-- additional tabs -->
   <div v-if="props.doctype != route.params.doctype">
     <ViewControls :key="props.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
-    v-model:updatedPageCount="updatedPageCount" :doctype="props.doctype" :filters="{}" :options="{
+    v-model:updatedPageCount="updatedPageCount" :doctype="props.doctype" :filters="(props.targetfield && doc.data[props.targetfield]) ? {name: doc.data[props.targetfield]} :(props.targetfield && doc.data.name) ? {[props.targetfield]:doc.data.name} : {}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }" />
     <DocsListView ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
@@ -28,6 +28,7 @@
   </div>
   <!-- existing tabs -->
   <div v-else class="flex flex-col flex-1 overflow-y-auto">
+    
       <ActivityHeader v-model="tabIndex" v-model:showWhatsappTemplates="showWhatsappTemplates" :tabs="tabs" :title="title"
         :doc="doc" :emailBox="emailBox" :whatsappBox="whatsappBox" :modalRef="modalRef" />
       <FadedScrollableDiv :maskHeight="30" class="flex flex-col flex-1 overflow-y-auto">
@@ -314,10 +315,7 @@ import { useRoute } from 'vue-router'
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
 const showQuickEntryModal = ref(false)
-
 const defaults = reactive({})
-
-// leads data is loaded in the ViewControls component
 const leads = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
@@ -387,6 +385,7 @@ function getKanbanRows(data) {
   return parseRows(_rows)
 }
 
+
 function parseRows(rows) {
   return rows.map((lead) => {
     let _rows = {}
@@ -423,11 +422,9 @@ function parseRows(rows) {
 
 function onNewClick(column) {
   let column_field = leads.value.params.column_field
-
   if (column_field) {
     defaults[column_field] = column.column.name
   }
-
   showLeadModal.value = true
 }
 
@@ -493,6 +490,9 @@ const props = defineProps({
   title: {
     type: String,
     default: 'Activity',
+  },
+  targetfield: {
+    type: String
   },
   doctype: {
     type: String
@@ -749,7 +749,6 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
     reload_email.value = false
   }
 })
-
 function scroll(hash) {
   setTimeout(() => {
     let el

@@ -23,6 +23,7 @@
         ref="activities"
         :doctype="tab.doctype ?? route.params.doctype"
         :title="tab.label"
+        :targetfield="tab.target_field ?? 'N/A'"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
@@ -201,6 +202,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
+import DotIcon from '@/components/Icons/DotIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -284,9 +286,10 @@ onMounted(async () => {
       additional_tabs.forEach((tab) => {
         tabs.value.push({
           name: tab.name,
-          label: tab.label,
-          icon: tab.icon,
-          doctype:tab.doc_type
+          label: (tab.label ?? (tab.linked_document || tab.parent_document)) ?? 'Untitled',
+          icon: DotIcon,
+          doctype:(tab.linked_document || tab.parent_document) ?? route.params.doctype,
+          target_field: tab.target_field ?? 'N/A',
         })
       })
   }

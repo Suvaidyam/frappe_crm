@@ -5,38 +5,53 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "is_linked_document",
+  "linked_document",
+  "parent_document",
   "label",
-  "icon",
-  "doc_type"
+  "target_field"
  ],
  "fields": [
   {
    "fieldname": "label",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "label",
+   "label": "label"
+  },
+  {
+   "fieldname": "target_field",
+   "fieldtype": "Data",
+   "label": "Target Field",
+   "read_only": 1,
    "reqd": 1
   },
   {
-   "fieldname": "icon",
-   "fieldtype": "Icon",
+   "depends_on": "eval:doc.is_linked_document",
+   "fieldname": "linked_document",
+   "fieldtype": "Autocomplete",
    "in_list_view": 1,
-   "label": "icon",
-   "reqd": 1
+   "label": "Linked Document",
+   "mandatory_depends_on": "eval:doc.is_linked_document"
   },
   {
-   "fieldname": "doc_type",
-   "fieldtype": "Link",
+   "default": "1",
+   "fieldname": "is_linked_document",
+   "fieldtype": "Check",
+   "label": "Is Linked Document"
+  },
+  {
+   "depends_on": "eval:!doc.is_linked_document",
+   "fieldname": "parent_document",
+   "fieldtype": "Autocomplete",
    "in_list_view": 1,
-   "label": "Doc Type ",
-   "options": "DocType",
-   "reqd": 1
+   "label": "Parent Document",
+   "mandatory_depends_on": "eval:!doc.is_linked_document"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-04 16:20:12.262246",
+ "modified": "2024-08-07 16:56:49.878118",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Frontend Views Tab",
