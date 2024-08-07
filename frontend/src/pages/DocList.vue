@@ -199,7 +199,7 @@
     :defaults="defaults" />
   <NoteModal v-if="showNoteModal" v-model="showNoteModal" :note="note" :doctype="route.params.doctype" :doc="docname" />
   <TaskModal v-if="showTaskModal" v-model="showTaskModal" :task="task" :doctype="route.params.doctype" :doc="docname" />
-  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
+  <DocQuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
 </template>
 
 <script setup>
@@ -218,7 +218,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DocModal from '@/components/Modals/DocModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
-import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
+import DocQuickEntryModal from '@/components/Settings/DocQuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import ListControl from '@/components/Layouts/ListControl.vue'
 import { globalStore } from '@/stores/global'

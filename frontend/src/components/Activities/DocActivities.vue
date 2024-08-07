@@ -508,7 +508,7 @@ const tabIndex = defineModel('tabIndex')
 const reload_email = ref(false)
 const modalRef = ref(null)
 
-const all_activities = createResource({
+const all_activities = props.doctype == route.params.doctype ? createResource({
   url: 'crm.api.get_doc.get_activities',
   params: { doctype: props.doctype, name: doc.value.data.name },
   // cache: ['activity', doc.value.data.name],
@@ -550,7 +550,7 @@ const all_activities = createResource({
     }
     return { versions, calls, notes, tasks }
   },
-})
+}) : []
 
 const showWhatsappTemplates = ref(false)
 

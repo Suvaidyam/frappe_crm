@@ -18,7 +18,8 @@
               type="select"
               v-model="_doctype"
               :label="__('DocType')"
-              :options="['CRM Lead', 'CRM Deal', 'Contact', 'CRM Organization']"
+              :options="[route.params.doctype]"
+              :disabled="true"
               @change="reload"
             />
             <div class="flex flex-row-reverse gap-2">
@@ -58,16 +59,17 @@ import QuickEntryLayoutBuilder from '@/components/Settings/QuickEntryLayoutBuild
 import { useDebounceFn } from '@vueuse/core'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
-
-const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-})
+import { useRoute } from 'vue-router'
+const route = useRoute()
+// const props = defineProps({
+//   doctype: {
+//     type: String,
+//     default: route.params.doctype,
+//   },
+// })
 
 const show = defineModel()
-const _doctype = ref(props.doctype)
+const _doctype = ref(route.params.doctype)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)
