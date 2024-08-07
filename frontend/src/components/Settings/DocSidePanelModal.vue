@@ -17,8 +17,9 @@
               type="select"
               v-model="_doctype"
               :label="__('DocType')"
-              :options="['CRM Lead', 'CRM Deal']"
+              :options="[route.params.doctype]"
               @change="reload"
+              :disabled="true"
             />
           </div>
           <div class="flex flex-row-reverse gap-2">
@@ -74,16 +75,17 @@ import SidePanelLayoutBuilder from '@/components/Settings/SidePanelLayoutBuilder
 import { useDebounceFn } from '@vueuse/core'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
-
-const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-})
+import {useRoute} from 'vue-router'
+const route = useRoute()
+// const props = defineProps({
+//   doctype: {
+//     type: String,
+//     default: 'CRM Lead',
+//   },
+// })
 
 const show = defineModel()
-const _doctype = ref(props.doctype)
+const _doctype = ref(route.params.doctype)
 const parentRef = ref(null)
 const loading = ref(false)
 const dirty = ref(false)

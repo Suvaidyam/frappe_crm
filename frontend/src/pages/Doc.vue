@@ -173,7 +173,7 @@
     :doc="lead.data"
     :doctype="route.params.doctype"
   />
-  <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
+  <DocSidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
 </template>
 <script setup>
 import Resizer from '@/components/Resizer.vue'
@@ -194,7 +194,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DocActivities from '@/components/Activities/DocActivities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import DocSidePanelModal from '@/components/Settings/DocSidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
