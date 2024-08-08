@@ -28,6 +28,16 @@
         </template>
       </Button> -->
     </div>
+    <ListFooter
+      v-if="pageLengthCount"
+      class="border-t sm:px-5 px-3 py-2"
+      v-model="pageLengthCount"
+      :options="{
+        rowCount: options.rowCount,
+        totalCount: options.totalCount,
+      }"
+      @loadMore="emit('loadMore')"
+    />
   </div>
   </div>
   
@@ -325,6 +335,14 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+const emit = defineEmits([
+  'loadMore',
+  'updatePageCount',
+  'columnWidthUpdated',
+  'applyFilter',
+  'applyLikeFilter',
+  'likeDoc',
+])
 function getRow(name, field) {
   function getValue(value) {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -505,6 +523,16 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  options: {
+    type: Object,
+    default: () => ({
+      selectable: true,
+      showTooltip: true,
+      resizeColumn: false,
+      totalCount: 0,
+      rowCount: 0,
+    }),
+  }
 })
 
 const doc = defineModel()

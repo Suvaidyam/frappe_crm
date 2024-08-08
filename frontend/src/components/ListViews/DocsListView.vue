@@ -49,34 +49,7 @@
       <ListRowItem v-else :item="item">
         <template #prefix>
           <div v-if="column.key === 'status'">
-            <IndicatorIcon :class="item.color" />
-          </div>
-          <div v-else-if="column.key === 'lead_name'">
-            <Avatar
-              v-if="item.label"
-              class="flex items-center"
-              :image="item.image"
-              :label="item.image_label"
-              size="sm"
-            />
-          </div>
-          <div v-else-if="column.key === 'organization'">
-            <Avatar
-              v-if="item.label"
-              class="flex items-center"
-              :image="item.logo"
-              :label="item.label"
-              size="sm"
-            />
-          </div>
-          <div v-else-if="column.key === 'lead_owner'">
-            <Avatar
-              v-if="item.full_name"
-              class="flex items-center"
-              :image="item.user_image"
-              :label="item.full_name"
-              size="sm"
-            />
+            <IndicatorIcon />
           </div>
           <div v-else-if="column.key === 'mobile_no'">
             <PhoneIcon class="h-4 w-4" />
@@ -124,28 +97,6 @@
             >
               <HeartIcon class="h-4 w-4" />
             </Button>
-          </div>
-          <div
-            v-else-if="column.key === 'sla_status'"
-            class="truncate text-base"
-          >
-            <Badge
-              v-if="item.value"
-              :variant="'subtle'"
-              :theme="item.color"
-              size="md"
-              :label="item.value"
-              @click="
-                (event) =>
-                  emit('applyFilter', {
-                    event,
-                    idx,
-                    column,
-                    item,
-                    firstColumn: columns[0],
-                  })
-              "
-            />
           </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl

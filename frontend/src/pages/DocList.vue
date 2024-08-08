@@ -192,18 +192,18 @@
 </template>
 
 <script setup>
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
+// import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
+// import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
+// import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DocsListView from '@/components/ListViews/DocsListView.vue'
-import KanbanView from '@/components/Kanban/KanbanView.vue'
+// import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DocModal from '@/components/Modals/DocModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
@@ -220,7 +220,6 @@ import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h, watch } from 'vue'
 
 const route = useRoute();
-
 const breadcrumbs = reactive([
   { label: __(route.params.doctype), route: { name: 'Doctype', params: { doctype: route.params.doctype } } }
 ]);
@@ -230,8 +229,8 @@ watch(() => route.params.doctype, (newDoctype) => {
   breadcrumbs[0].route = { name: 'Doctype', params: { doctype: newDoctype } };
 });
 const { makeCall } = globalStore()
-const { getUser } = usersStore()
-const { getOrganization } = organizationsStore()
+// const { getUser } = usersStore()
+// const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
 const leadsListView = ref(null)
@@ -342,40 +341,40 @@ function parseRows(rows) {
   })
 }
 
-function onNewClick(column) {
-  let column_field = leads.value.params.column_field
+// function onNewClick(column) {
+//   let column_field = leads.value.params.column_field
 
-  if (column_field) {
-    defaults[column_field] = column.column.name
-  }
+//   if (column_field) {
+//     defaults[column_field] = column.column.name
+//   }
 
-  showLeadModal.value = true
-}
+//   showLeadModal.value = true
+// }
 
-function actions(itemName) {
-  let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
-  let actions = [
-    {
-      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-      label: __('Make a Call'),
-      onClick: () => makeCall(mobile_no),
-      condition: () => mobile_no && callEnabled.value,
-    },
-    {
-      icon: h(NoteIcon, { class: 'h-4 w-4' }),
-      label: __('New Note'),
-      onClick: () => showNote(itemName),
-    },
-    {
-      icon: h(TaskIcon, { class: 'h-4 w-4' }),
-      label: __('New Task'),
-      onClick: () => showTask(itemName),
-    },
-  ]
-  return actions.filter((action) =>
-    action.condition ? action.condition() : true,
-  )
-}
+// function actions(itemName) {
+//   let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
+//   let actions = [
+//     {
+//       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+//       label: __('Make a Call'),
+//       onClick: () => makeCall(mobile_no),
+//       condition: () => mobile_no && callEnabled.value,
+//     },
+//     {
+//       icon: h(NoteIcon, { class: 'h-4 w-4' }),
+//       label: __('New Note'),
+//       onClick: () => showNote(itemName),
+//     },
+//     {
+//       icon: h(TaskIcon, { class: 'h-4 w-4' }),
+//       label: __('New Task'),
+//       onClick: () => showTask(itemName),
+//     },
+//   ]
+//   return actions.filter((action) =>
+//     action.condition ? action.condition() : true,
+//   )
+// }
 
 const docname = ref('')
 const showNoteModal = ref(false)
@@ -384,10 +383,10 @@ const note = ref({
   content: '',
 })
 
-function showNote(name) {
-  docname.value = name
-  showNoteModal.value = true
-}
+// function showNote(name) {
+//   docname.value = name
+//   showNoteModal.value = true
+// }
 
 const showTaskModal = ref(false)
 const task = ref({
@@ -399,8 +398,8 @@ const task = ref({
   status: 'Backlog',
 })
 
-function showTask(name) {
-  docname.value = name
-  showTaskModal.value = true
-}
+// function showTask(name) {
+//   docname.value = name
+//   showTaskModal.value = true
+// }
 </script>
