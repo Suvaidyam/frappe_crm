@@ -1,97 +1,99 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
+import { call } from 'frappe-ui'
+import { reactive } from 'vue'
 
 const routes = [
-  {
-    path: '/',
-    redirect: { name: 'Leads' },
-    name: 'Home',
-  },
-  {
-    path: '/notifications',
-    name: 'Notifications',
-    component: () => import('@/pages/MobileNotification.vue'),
-  },
-  {
-    alias: '/leads',
-    path: '/leads/view/:viewType?',
-    name: 'Leads',
-    component: () => import('@/pages/Leads.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/leads/:leadId',
-    name: 'Lead',
-    component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
-    props: true,
-  },
-  {
-    alias: '/deals',
-    path: '/deals/view/:viewType?',
-    name: 'Deals',
-    component: () => import('@/pages/Deals.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/deals/:dealId',
-    name: 'Deal',
-    component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
-    props: true,
-  },
-  {
-    path: '/notes',
-    name: 'Notes',
-    component: () => import('@/pages/Notes.vue'),
-  },
-  {
-    alias: '/tasks',
-    path: '/tasks/view/:viewType?',
-    name: 'Tasks',
-    component: () => import('@/pages/Tasks.vue'),
-  },
-  {
-    path: '/contacts',
-    name: 'Contacts',
-    component: () => import('@/pages/Contacts.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/contacts/:contactId',
-    name: 'Contact',
-    component: () => import('@/pages/Contact.vue'),
-    props: true,
-  },
-  {
-    path: '/organizations',
-    name: 'Organizations',
-    component: () => import('@/pages/Organizations.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/organizations/:organizationId',
-    name: 'Organization',
-    component: () => import('@/pages/Organization.vue'),
-    props: true,
-  },
-  {
-    path: '/call-logs',
-    name: 'Call Logs',
-    component: () => import('@/pages/CallLogs.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/email-templates',
-    name: 'Email Templates',
-    component: () => import('@/pages/EmailTemplates.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
-  },
-  {
-    path: '/email-templates/:emailTemplateId',
-    name: 'Email Template',
-    component: () => import('@/pages/EmailTemplate.vue'),
-    props: true,
-  },
+  // {
+  //   path: '/',
+  //   redirect: { name: 'Doctype',params:{doctype:'NA'} },
+  //   name: 'Home',
+  // },
+  // {
+  //   path: '/notifications',
+  //   name: 'Notifications',
+  //   component: () => import('@/pages/MobileNotification.vue'),
+  // },
+  // {
+  //   alias: '/leads',
+  //   path: '/leads/view/:viewType?',
+  //   name: 'Leads',
+  //   component: () => import('@/pages/Leads.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/leads/:leadId',
+  //   name: 'Lead',
+  //   component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
+  //   props: true,
+  // },
+  // {
+  //   alias: '/deals',
+  //   path: '/deals/view/:viewType?',
+  //   name: 'Deals',
+  //   component: () => import('@/pages/Deals.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/deals/:dealId',
+  //   name: 'Deal',
+  //   component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
+  //   props: true,
+  // },
+  // {
+  //   path: '/notes',
+  //   name: 'Notes',
+  //   component: () => import('@/pages/Notes.vue'),
+  // },
+  // {
+  //   alias: '/tasks',
+  //   path: '/tasks/view/:viewType?',
+  //   name: 'Tasks',
+  //   component: () => import('@/pages/Tasks.vue'),
+  // },
+  // {
+  //   path: '/contacts',
+  //   name: 'Contacts',
+  //   component: () => import('@/pages/Contacts.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/contacts/:contactId',
+  //   name: 'Contact',
+  //   component: () => import('@/pages/Contact.vue'),
+  //   props: true,
+  // },
+  // {
+  //   path: '/organizations',
+  //   name: 'Organizations',
+  //   component: () => import('@/pages/Organizations.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/organizations/:organizationId',
+  //   name: 'Organization',
+  //   component: () => import('@/pages/Organization.vue'),
+  //   props: true,
+  // },
+  // {
+  //   path: '/call-logs',
+  //   name: 'Call Logs',
+  //   component: () => import('@/pages/CallLogs.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/email-templates',
+  //   name: 'Email Templates',
+  //   component: () => import('@/pages/EmailTemplates.vue'),
+  //   meta: { scrollPos: { top: 0, left: 0 } },
+  // },
+  // {
+  //   path: '/email-templates/:emailTemplateId',
+  //   name: 'Email Template',
+  //   component: () => import('@/pages/EmailTemplate.vue'),
+  //   props: true,
+  // },
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -118,7 +120,6 @@ const routes = [
     component: () => import(`@/pages/Doc.vue`),
   },
 ]
-
 const handleMobileView = (componentName) => {
   return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
 }
@@ -147,19 +148,24 @@ let router = createRouter({
   routes,
   scrollBehavior,
 })
-
+let default_doctype = reactive('')
+if(!default_doctype || default_doctype === 'N/A'){
+  call('crm.api.list.get_default_page').then((default_doctypes)=>{
+    default_doctype = default_doctypes.length ? default_doctypes[0].document_type : 'N/A';
+    router.push({ name: 'Doctype',params:{doctype:default_doctype} })
+  }).catch((e)=>{
+    console.log(e)
+  });
+}
 router.beforeEach(async (to, from, next) => {
   const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
-
   isLoggedIn && (await users.promise)
-
   if (from.meta?.scrollPos) {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
-
   if (to.name === 'Login' && isLoggedIn) {
-    next({ name: 'Leads' })
+    next({ name: 'Doctype',params: { doctype: default_doctype } })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     next({ name: 'Login' })
   } else if (to.matched.length === 0) {
