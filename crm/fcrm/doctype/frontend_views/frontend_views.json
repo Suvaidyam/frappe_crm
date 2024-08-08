@@ -6,9 +6,10 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "label",
+  "enabled",
   "document_type",
   "icon",
+  "label",
   "is_default",
   "tabs"
  ],
@@ -48,11 +49,17 @@
    "fieldname": "is_default",
    "fieldtype": "Check",
    "label": "Is Default"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-07 19:19:31.410714",
+ "modified": "2024-08-08 13:14:34.668725",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Frontend Views",
