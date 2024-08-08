@@ -1,6 +1,6 @@
 <template>
   <!-- additional tabs -->
-  <div v-if="props.doctype != route.params.doctype">
+  <div v-if="props.doctype != route.params.doctype" class="flex flex-col flex-1 overflow-y-auto">
     <ViewControls :key="props.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount" :doctype="props.doctype" :filters="(props.targetfield && doc.data[props.targetfield]) ? {name: doc.data[props.targetfield]} :(props.targetfield && doc.data.name) ? {[props.targetfield]:doc.data.name} : {}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
@@ -14,21 +14,25 @@
     }" @loadMore="() => loadMore++" @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)" @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)" @likeDoc="(data) => viewControls.likeDoc(data)" />
-  </div>
-  <div v-else-if="leads.data" class="flex h-full items-center justify-center">
+    <div v-else-if="!leads.data" class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500">
+        <LoadingIndicator class="h-6 w-6" />
+        <span>{{ __('Loading...') }}</span>
+    </div>
+    <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
       <LeadsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__(props.doctype)]) }}</span>
-      <Button :label="__('Create')" @click="showLeadModal = true">
+      <!-- <Button :label="__('Create')" @click="showLeadModal = true">
         <template #prefix>
           <FeatherIcon name="plus" class="h-4" />
         </template>
-      </Button>
+      </Button> -->
     </div>
   </div>
+  </div>
+  
   <!-- existing tabs -->
   <div v-else class="flex flex-col flex-1 overflow-y-auto">
-    
       <ActivityHeader v-model="tabIndex" v-model:showWhatsappTemplates="showWhatsappTemplates" :tabs="tabs" :title="title"
         :doc="doc" :emailBox="emailBox" :whatsappBox="whatsappBox" :modalRef="modalRef" />
       <FadedScrollableDiv :maskHeight="30" class="flex flex-col flex-1 overflow-y-auto">

@@ -124,46 +124,46 @@ const { toggle: toggleNotificationPanel } = notificationsStore()
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const links = ref([
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
+  // {
+  //   label: 'Leads',
+  //   icon: LeadsIcon,
+  //   to: 'Leads',
+  // },
+  // {
+  //   label: 'Deals',
+  //   icon: DealsIcon,
+  //   to: 'Deals',
+  // },
+  // {
+  //   label: 'Contacts',
+  //   icon: ContactsIcon,
+  //   to: 'Contacts',
+  // },
+  // {
+  //   label: 'Organizations',
+  //   icon: OrganizationsIcon,
+  //   to: 'Organizations',
+  // },
+  // {
+  //   label: 'Notes',
+  //   icon: NoteIcon,
+  //   to: 'Notes',
+  // },
+  // {
+  //   label: 'Tasks',
+  //   icon: TaskIcon,
+  //   to: 'Tasks',
+  // },
   // {
   //   label: 'Call Logs',
   //   icon: PhoneIcon,
   //   to: 'Call Logs',
   // },
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
-  },
+  // {
+  //   label: 'Email Templates',
+  //   icon: Email2Icon,
+  //   to: 'Email Templates',
+  // },
 ])
 
 const allViews = computed(() => {

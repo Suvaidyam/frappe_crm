@@ -26,12 +26,12 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval:doc.is_linked_document",
+   "depends_on": "eval:doc.is_linked_document == 1",
    "fieldname": "linked_document",
    "fieldtype": "Autocomplete",
    "in_list_view": 1,
    "label": "Linked Document",
-   "mandatory_depends_on": "eval:doc.is_linked_document"
+   "mandatory_depends_on": "eval:doc.is_linked_document == 1"
   },
   {
    "default": "1",
@@ -40,18 +40,18 @@
    "label": "Is Linked Document"
   },
   {
-   "depends_on": "eval:!doc.is_linked_document",
+   "depends_on": "eval:doc.is_linked_document == 0",
    "fieldname": "parent_document",
    "fieldtype": "Autocomplete",
    "in_list_view": 1,
    "label": "Parent Document",
-   "mandatory_depends_on": "eval:!doc.is_linked_document"
+   "mandatory_depends_on": "eval:doc.is_linked_document == 0"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-07 16:56:49.878118",
+ "modified": "2024-08-08 10:50:23.987632",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Frontend Views Tab",
