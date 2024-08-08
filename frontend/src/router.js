@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { call } from 'frappe-ui'
-import { reactive } from 'vue'
+import { ref } from 'vue'
 
 const routes = [
   // {
@@ -148,11 +148,11 @@ let router = createRouter({
   routes,
   scrollBehavior,
 })
-let default_doctype = reactive('')
-if(!default_doctype || default_doctype === 'N/A'){
+let default_doctype = ref(null)
+if((!default_doctype.value || default_doctype.value === 'N/A') && window.location.pathname == '/crm/'){
   call('crm.api.list.get_default_page').then((default_doctypes)=>{
-    default_doctype = default_doctypes.length ? default_doctypes[0].document_type : 'N/A';
-    router.push({ name: 'Doctype',params:{doctype:default_doctype} })
+    default_doctype.value = default_doctypes.length ? default_doctypes[0].document_type : 'N/A';
+    router.push({ name: 'Doctype',params:{doctype:default_doctype.value} })
   }).catch((e)=>{
     console.log(e)
   });
@@ -165,7 +165,7 @@ router.beforeEach(async (to, from, next) => {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
   if (to.name === 'Login' && isLoggedIn) {
-    next({ name: 'Doctype',params: { doctype: default_doctype } })
+    next({ name: 'Doctype',params: { doctype: default_doctype.value } })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     next({ name: 'Login' })
   } else if (to.matched.length === 0) {
