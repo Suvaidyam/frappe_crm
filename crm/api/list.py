@@ -2,7 +2,14 @@ import frappe
 
 @frappe.whitelist(allow_guest=True)
 def get_list_views():
-    return frappe.get_all('Frontend Views',filters={'enabled':1}, fields=['name', 'label','document_type','icon','is_default'],order_by='is_default DESC, creation ASC')
+    # user = frappe.session.user
+    # roles = frappe.get_roles(user)
+    sidebar_list = frappe.get_all('Frontend Views',filters={'enabled':1}, fields=['name', 'label','document_type','icon','is_default'],order_by='is_default DESC, creation ASC')
+    result = []
+    for sidebar in sidebar_list:
+        if frappe.has_permission(sidebar.document_type, "read"):
+            result.append(sidebar)
+    return result
 
 @frappe.whitelist(allow_guest=True)
 def get_default_page():
