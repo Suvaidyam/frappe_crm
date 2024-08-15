@@ -38,6 +38,18 @@ module.exports = {
         //   800: '#8c1aff',
         //   900: '#8000ff'
         // }
+        // gray: { //mGrant
+        //   50:  '#F9E5E9',  // Lightest shade
+        //   100: '#F2CCD4',
+        //   200: '#E599A9',
+        //   300: '#D9667F',
+        //   400: '#CC3354',
+        //   500: '#BF002A',  // Midway between base and light
+        //   600: '#B30026',  // Slightly lighter than base
+        //   700: '#A60022',
+        //   800: '#99001E',
+        //   900: '#A01236'   // Darkest shade as provided
+        // }
       }
     },
   },

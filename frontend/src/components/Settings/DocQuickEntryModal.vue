@@ -18,7 +18,7 @@
               type="select"
               v-model="_doctype"
               :label="__('DocType')"
-              :options="[route.params.doctype]"
+              :options="[props.fromTabs ? props.linked_doctype : route.params.doctype]"
               :disabled="true"
               @change="reload"
             />
@@ -58,18 +58,24 @@ import Fields from '@/components/Fields.vue'
 import DocQuickEntryLayoutBuilder from '@/components/Settings/DocQuickEntryLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, watch, onMounted, nextTick,defineProps } from 'vue'
 import { useRoute } from 'vue-router'
 const route = useRoute()
-// const props = defineProps({
-//   doctype: {
-//     type: String,
-//     default: route.params.doctype,
-//   },
-// })
+const props = defineProps({
+  fromTabs:{
+    type: Boolean,
+    default: false
+  },
+  linked_doctype:{
+    type: String,
+    default: ''
+  }
+})
+console.log(props)
 
 const show = defineModel()
-const _doctype = ref(route.params.doctype)
+const _doctype = ref(props.fromTabs ? props.linked_doctype :  props.fromTabs ? props.linked_doctype : route.params.doctype)
+console.log(props.fromTabs,props.linked_doctype ,'sdf',_doctype.value)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)

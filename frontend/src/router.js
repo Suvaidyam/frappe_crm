@@ -10,24 +10,24 @@ const routes = [
   //   redirect: { name: 'Doctype',params:{doctype:'NA'} },
   //   name: 'Home',
   // },
-  // {
-  //   path: '/notifications',
-  //   name: 'Notifications',
-  //   component: () => import('@/pages/MobileNotification.vue'),
-  // },
-  // {
-  //   alias: '/leads',
-  //   path: '/leads/view/:viewType?',
-  //   name: 'Leads',
-  //   component: () => import('@/pages/Leads.vue'),
-  //   meta: { scrollPos: { top: 0, left: 0 } },
-  // },
-  // {
-  //   path: '/leads/:leadId',
-  //   name: 'Lead',
-  //   component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
-  //   props: true,
-  // },
+  {
+    path: '/notifications',
+    name: 'Notifications',
+    component: () => import('@/pages/MobileNotification.vue'),
+  },
+  {
+    alias: '/leads',
+    path: '/leads/view/:viewType?',
+    name: 'Leads',
+    component: () => import('@/pages/Leads.vue'),
+    meta: { scrollPos: { top: 0, left: 0 } },
+  },
+  {
+    path: '/leads/:leadId',
+    name: 'Lead',
+    component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
+    props: true,
+  },
   // {
   //   alias: '/deals',
   //   path: '/deals/view/:viewType?',
@@ -152,7 +152,7 @@ let default_doctype = ref(null)
 if((!default_doctype.value || default_doctype.value === 'N/A') && window.location.pathname == '/crm/'){
   call('crm.api.list.get_default_page').then((default_doctypes)=>{
     default_doctype.value = default_doctypes.length ? default_doctypes[0].document_type : 'N/A';
-    router.push({ name: 'Doctype',params:{doctype:default_doctype.value} })
+    router.push({ name: 'Doctype',params:{doctype:default_doctype.value,viewType:"list"} })
   }).catch((e)=>{
     console.log(e)
   });
@@ -165,7 +165,7 @@ router.beforeEach(async (to, from, next) => {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
   if (to.name === 'Login' && isLoggedIn) {
-    next({ name: 'Doctype',params: { doctype: default_doctype.value } })
+    next({ name: 'Doctype',params: { doctype: default_doctype.value,viewType:"list" } })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     next({ name: 'Login' })
   } else if (to.matched.length === 0) {

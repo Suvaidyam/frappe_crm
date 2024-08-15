@@ -1,11 +1,18 @@
 <template>
   <!-- additional tabs -->
   <div v-if="props.doctype != route.params.doctype" class="flex flex-col flex-1 overflow-y-auto">
-    <ViewControls :key="props.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
+    <div class="flex items-center justify-end w-full pt-3 pr-5 pb-0">
+      <Button variant="solid" :label="__('Create')" @click="showLeadModal = true">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
+      </Button>
+    </div>
+    <DocViewControls :key="props.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount" :doctype="props.doctype" :filters="(props.targetfield && doc.data[props.targetfield]) ? {name: doc.data[props.targetfield]} :(props.targetfield && doc.data.name) ? {[props.targetfield]:doc.data.name} : {}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }" />
-    <DocsListView ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
+    <DocsListView :fromTabs="true" :parent_doctype="props.doctype" ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
     v-model:list="leads" :rows="rows" :columns="leads.data.columns" :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -22,11 +29,11 @@
     <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
       <LeadsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__(props.doctype)]) }}</span>
-      <!-- <Button :label="__('Create')" @click="showLeadModal = true">
+      <Button :label="__('Create')" @click="showLeadModal = true">
         <template #prefix>
           <FeatherIcon name="plus" class="h-4" />
         </template>
-      </Button> -->
+      </Button>
     </div>
     <ListFooter
       v-if="pageLengthCount"
@@ -38,7 +45,13 @@
       }"
       @loadMore="emit('loadMore')"
     />
+    
   </div>
+  <DocModal v-if="showLeadModal" :fromTabs="true" :linked_doctype="props.doctype" :targetfield="props.targetfield" v-model="showLeadModal" v-model:quickEntry="showQuickEntryModal"
+    :defaults="defaults" />
+    <!-- <NoteModal v-if="showNoteModal" v-model="showNoteModal" :note="note" :doctype="route.params.doctype" :doc="docname" />
+    <TaskModal v-if="showTaskModal" v-model="showTaskModal" :task="task" :doctype="route.params.doctype" :doc="docname" /> -->
+    <DocQuickEntryModal v-if="showQuickEntryModal" :fromTabs="true" :linked_doctype="props.doctype" v-model="showQuickEntryModal" />
   </div>
   
   <!-- existing tabs -->
@@ -262,12 +275,17 @@
       <WhatsappTemplateSelectorModal v-if="whatsappEnabled" v-model="showWhatsappTemplates" :doctype="doctype"
         @send="(t) => sendTemplate(t)" />
       <AllModals ref="modalRef" v-model="all_activities" :doctype="doctype" :doc="doc" />
-    </div>
+  </div>
 </template>
 <script setup>
 // =============================================================================
+import LayoutHeader from '@/components/LayoutHeader.vue'
 import DocsListView from '@/components/ListViews/DocsListView.vue'
-import ViewControls from '@/components/ViewControls.vue'
+import DocViewControls from '@/components/DocViewControls.vue'
+import DocModal from '@/components/Modals/DocModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
+import DocQuickEntryModal from '@/components/Settings/DocQuickEntryModal.vue'
 // ===============================================================================
 import ActivityHeader from '@/components/Activities/ActivityHeader.vue'
 import EmailArea from '@/components/Activities/EmailArea.vue'
@@ -335,6 +353,7 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
 const emit = defineEmits([
   'loadMore',
   'updatePageCount',
@@ -535,6 +554,14 @@ const props = defineProps({
   }
 })
 
+watch(() => showLeadModal.value, async (value) => {
+  if((props.doctype != route.params.doctype) && !value){
+    if(leads.value.hasOwnProperty('fetch')){
+      leads.value.fetch()
+    }
+  }
+},{immediate: true,deep:true})
+
 const doc = defineModel()
 const reload = defineModel('reload')
 const tabIndex = defineModel('tabIndex')
@@ -542,7 +569,7 @@ const tabIndex = defineModel('tabIndex')
 const reload_email = ref(false)
 const modalRef = ref(null)
 
-const all_activities = props.doctype == route.params.doctype ? createResource({
+const all_activities = (props.doctype == route.params.doctype) ? createResource({
   url: 'crm.api.get_doc.get_activities',
   params: { doctype: props.doctype, name: doc.value.data.name },
   // cache: ['activity', doc.value.data.name],
@@ -585,6 +612,16 @@ const all_activities = props.doctype == route.params.doctype ? createResource({
     return { versions, calls, notes, tasks }
   },
 }) : []
+
+watch(()=>[route.params.doctype,route.params.docId],async ([newdocType,newDocID])=>{
+  if(!newdocType || !newDocID) return
+  all_activities.params = { doctype: newdocType, name: newDocID }
+  if(props.doctype == route.params.doctype){
+    if(all_activities.hasOwnProperty('fetch')){
+      all_activities.fetch()
+    }
+  }
+},{immediate:true,deep:true})
 
 const showWhatsappTemplates = ref(false)
 

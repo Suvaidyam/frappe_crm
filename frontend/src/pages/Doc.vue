@@ -17,7 +17,7 @@
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
+    <Tabs :key="route.params.doctype" v-model="tabIndex" v-slot="{ tab }" :tabs="tabs" class="overflow-x-scroll truncate">
       <DocActivities
         :key="tabIndex"
         ref="activities"
@@ -148,6 +148,7 @@
           >
             <Section :is-opened="section.opened" :label="section.label">
               <SectionFields
+                :key="lead.data.name"
                 :fields="section.fields"
                 v-model="lead.data"
                 @update="updateField"
@@ -262,7 +263,6 @@ const props = defineProps({
 const lead = createResource({
   url: 'crm.api.get_doc.get_doc',
   params: { doctype:route.params.doctype,name: route.params.docId },
-  // cache: ['lead', props.leadId],
   onSuccess: (data) => {
     setupAssignees(data)
     setupCustomActions(data, {
@@ -276,26 +276,82 @@ const lead = createResource({
     })
   },
 })
-
-onMounted(async () => {
-  let additional_tabs = await call('crm.api.list.get_tabs', {
-    name: route.params.doctype,
-  })
-  // console.log(additional_tabs,tabs,'additional_tabs')
-  if (additional_tabs) {
-      additional_tabs.forEach((tab) => {
-        tabs.value.push({
-          name: tab.name,
-          label: (tab.label ?? (tab.linked_document || tab.parent_document)) ?? 'Untitled',
-          icon: DotIcon,
-          doctype:(tab.linked_document || tab.parent_document) ?? route.params.doctype,
-          target_field: tab.target_field ?? 'N/A',
-        })
-      })
-  }
-  if (lead.data) return
-  lead.fetch()
+const dynamicTabs = ref([]); // Dynamic tabs
+const tabIndex = ref(0)
+const tabs = computed(() => {
+  let tabOptions = ref([
+    {
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
+      static: true
+    },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
+      static: true
+    },
+    {
+      name: 'Comments',
+      label: __('Comments'),
+      icon: CommentIcon,
+      static: true
+    },
+    {
+      name: 'Calls',
+      label: __('Calls'),
+      icon: PhoneIcon,
+      condition: () => callEnabled.value,
+      static: true
+    },
+    {
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+      static: true
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
+      static: true
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+      static: true
+    },
+  ])
+  return [...tabOptions.value.filter((tab) => (tab.condition ? tab.condition() : true)), ...dynamicTabs.value]
 })
+
+watch(() => [route.params.doctype,route.params.docId], async ([newdocType,newdocId]) => {
+  if (!newdocType || !newdocId) return; // Check if the newVal exists
+  tabIndex.value = 0;
+  lead.params = {
+    doctype: newdocType,
+    name: newdocId
+  };
+  dynamicTabs.value = [];
+  let additional_tabs = await call('crm.api.list.get_tabs', {
+    name: newdocType,
+  });
+  if (additional_tabs.length) {
+    additional_tabs.forEach((tab) => {
+      dynamicTabs.value.push({
+        name: tab.name,
+        label: tab.label || (tab.linked_document || tab.parent_document) || 'Untitled',
+        icon: DotIcon,
+        doctype: tab.linked_document || tab.parent_document || newVal,
+        target_field: tab.target_field || 'N/A',
+      });
+    });
+  }
+  lead.fetch();
+}, { immediate: true, deep: true });
 
 const reload = ref(false)
 const showAssignmentModal = ref(false)
@@ -359,50 +415,8 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0)
 
-const tabs = computed(() => {
-  let tabOptions = ref([
-    {
-      name: 'Activity',
-      label: __('Activity'),
-      icon: ActivityIcon,
-    },
-    {
-      name: 'Emails',
-      label: __('Emails'),
-      icon: EmailIcon,
-    },
-    {
-      name: 'Comments',
-      label: __('Comments'),
-      icon: CommentIcon,
-    },
-    {
-      name: 'Calls',
-      label: __('Calls'),
-      icon: PhoneIcon,
-      condition: () => callEnabled.value,
-    },
-    {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
-    },
-    {
-      name: 'Notes',
-      label: __('Notes'),
-      icon: NoteIcon,
-    },
-    {
-      name: 'WhatsApp',
-      label: __('WhatsApp'),
-      icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
-    },
-  ])
-  return tabOptions.value.filter((tab) => (tab.condition ? tab.condition() : true))
-})
+
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {

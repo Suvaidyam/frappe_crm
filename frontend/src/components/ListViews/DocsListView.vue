@@ -4,7 +4,13 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({ name: 'Doc', params: { doctype: route.params.doctype,docId: row.name } }),
+      getRowRoute: (row) => ({
+      name: 'Doc',
+      params: {
+        doctype: fromTabs ? parent_doctype : $route.params.doctype,
+        docId: row.name
+      }
+    }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
@@ -174,6 +180,14 @@ const props = defineProps({
   rows: {
     type: Array,
     required: true,
+  },
+  fromTabs: {
+    type: Boolean,
+    default: false,
+  },
+  parent_doctype: {
+    type: String,
+    default: '',
   },
   columns: {
     type: Array,

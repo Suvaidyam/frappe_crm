@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-              {{ __(route.params.doctype) }}
+              {{ props.fromTabs ? __(props.linked_doctype) : __(route.params.doctype) }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -47,14 +47,29 @@ import DocFields from '@/components/DocFields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { createResource } from 'frappe-ui'
-import { computed, onMounted, ref, reactive, nextTick } from 'vue'
+import {defineProps, computed, onMounted, ref, reactive, nextTick ,watch} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
 const props = defineProps({
   defaults: Object,
-})
+  fromTabs: {
+    type: Boolean,
+    default: false
+  },
+  linked_doctype: {
+    type: String,
+    default: ''
+  },
+  targetfield: {
+    type: String,
+    default: ''
+  }
+});
 
-const route = useRoute()
+const lead = reactive({
+  [props.fromTabs && props.targetfield]: route.params.docId
+});
 
 const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
@@ -66,34 +81,19 @@ const isLeadCreating = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', route.params.doctype],
-  params: { doctype: route.params.doctype, type: 'Quick Entry' },
+  cache: ['quickEntryFields', props.fromTabs ? props.linked_doctype : route.params.doctype],
+  params: { doctype: props.fromTabs ? props.linked_doctype : route.params.doctype, type: 'Quick Entry' },
   auto: true
 })
 
-const lead = reactive({
-  // salutation: '',
-  // first_name: '',
-  // last_name: '',
-  // email: '',
-  // mobile_no: '',
-  // gender: '',
-  // organization: '',
-  // website: '',
-  // no_of_employees: '',
-  // territory: '',
-  // annual_revenue: '',
-  // industry: '',
-  // status: '',
-  // lead_owner: '',
-})
+
 
 const createLead = createResource({
   url: 'frappe.client.insert',
   makeParams(values) {
     return {
       doc: {
-        doctype: route.params.doctype,
+        doctype: props.fromTabs ? props.linked_doctype : route.params.doctype,
         ...values,
       },
     }
@@ -101,9 +101,9 @@ const createLead = createResource({
 })
 
 function createNewLead() {
-  if (lead.website && !lead.website.startsWith('http')) {
-    lead.website = 'https://' + lead.website
-  }
+  // if (lead.website && !lead.website.startsWith('http')) {
+  //   lead.website = 'https://' + lead.website
+  // }
 
   createLead.submit(lead, {
     validate() {
@@ -143,7 +143,9 @@ function createNewLead() {
     onSuccess(data) {
       isLeadCreating.value = false
       show.value = false
-      router.push({ name: 'Doc', params: { doctype:route.params.doctype,docId: data.name } })
+      if(!props.fromTabs){
+        router.push({ name: 'Doc', params: { doctype: route.params.doctype,docId: data.name } })
+      }
     },
     onError(err) {
       isLeadCreating.value = false

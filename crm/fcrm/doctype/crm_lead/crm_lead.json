@@ -68,6 +68,7 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
+   "in_global_search": 1,
    "label": "First Name",
    "reqd": 1
   },
@@ -291,7 +292,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-05 00:58:07.321058",
+ "modified": "2024-08-15 18:15:49.633164",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

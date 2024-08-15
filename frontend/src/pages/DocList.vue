@@ -12,11 +12,11 @@
       </Button>
     </template>
   </LayoutHeader>
-    <ViewControls :key="route.params.doctype" :ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
+    <DocViewControls :key="route.params.doctype" ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount" :doctype="route.params.doctype" :filters="{}" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }" />
-  <!-- <KanbanView
+  <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
     :options="{
@@ -163,7 +163,7 @@
         </Dropdown>
       </div>
     </template>
-  </KanbanView> -->
+  </KanbanView>
   <DocsListView ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
     v-model:list="leads" :rows="rows" :columns="leads.data.columns" :options="{
       showTooltip: false,
@@ -203,12 +203,12 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DocsListView from '@/components/ListViews/DocsListView.vue'
-// import KanbanView from '@/components/Kanban/KanbanView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DocModal from '@/components/Modals/DocModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import DocQuickEntryModal from '@/components/Settings/DocQuickEntryModal.vue'
-import ViewControls from '@/components/ViewControls.vue'
+import DocViewControls from '@/components/DocViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
@@ -341,40 +341,38 @@ function parseRows(rows) {
   })
 }
 
-// function onNewClick(column) {
-//   let column_field = leads.value.params.column_field
+function onNewClick(column) {
+  let column_field = leads.value.params.column_field
+  if (column_field) {
+    defaults[column_field] = column.column.name
+  }
+  showLeadModal.value = true
+}
 
-//   if (column_field) {
-//     defaults[column_field] = column.column.name
-//   }
-
-//   showLeadModal.value = true
-// }
-
-// function actions(itemName) {
-//   let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
-//   let actions = [
-//     {
-//       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-//       label: __('Make a Call'),
-//       onClick: () => makeCall(mobile_no),
-//       condition: () => mobile_no && callEnabled.value,
-//     },
-//     {
-//       icon: h(NoteIcon, { class: 'h-4 w-4' }),
-//       label: __('New Note'),
-//       onClick: () => showNote(itemName),
-//     },
-//     {
-//       icon: h(TaskIcon, { class: 'h-4 w-4' }),
-//       label: __('New Task'),
-//       onClick: () => showTask(itemName),
-//     },
-//   ]
-//   return actions.filter((action) =>
-//     action.condition ? action.condition() : true,
-//   )
-// }
+function actions(itemName) {
+  let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
+  let actions = [
+    {
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      label: __('Make a Call'),
+      onClick: () => makeCall(mobile_no),
+      condition: () => mobile_no && callEnabled.value,
+    },
+    {
+      icon: h(NoteIcon, { class: 'h-4 w-4' }),
+      label: __('New Note'),
+      onClick: () => showNote(itemName),
+    },
+    {
+      icon: h(TaskIcon, { class: 'h-4 w-4' }),
+      label: __('New Task'),
+      onClick: () => showTask(itemName),
+    },
+  ]
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true,
+  )
+}
 
 const docname = ref('')
 const showNoteModal = ref(false)

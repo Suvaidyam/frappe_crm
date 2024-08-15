@@ -124,11 +124,11 @@ const { toggle: toggleNotificationPanel } = notificationsStore()
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const links = ref([
-  // {
-  //   label: 'Leads',
-  //   icon: LeadsIcon,
-  //   to: 'Leads',
-  // },
+  {
+    label: 'Leads',
+    icon: LeadsIcon,
+    to: 'Leads',
+  },
   // {
   //   label: 'Deals',
   //   icon: DealsIcon,
@@ -200,8 +200,7 @@ onMounted(async() => {
       icon: view.icon,
       to: {
         name: 'Doctype',
-        params: { doctype: view.document_type},
-        query: { view: 'list'}
+        params: { doctype: view.document_type,viewType:"list"},
       },
     }
   }))
