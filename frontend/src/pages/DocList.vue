@@ -20,7 +20,7 @@
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
     :options="{
-      getRoute: (row) => ({ name: 'Doc', params: { doctype:route.params.doctype,docId: route.params.docId } }),
+      getRoute: (row) => ({ name: 'Doc', params: { doctype:route.params.doctype,docId: row.name } }),
       onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
@@ -28,7 +28,7 @@
   >
     <template #title="{ titleField, itemName }">
       <div class="flex items-center gap-2">
-        <div v-if="titleField === 'status'">
+        <div v-if="titleField === 'type'">
           <IndicatorIcon :class="getRow(itemName, titleField).color" />
         </div>
         <div
@@ -61,38 +61,8 @@
         v-if="getRow(itemName, fieldName).label"
         class="truncate flex items-center gap-2"
       >
-        <div v-if="fieldName === 'status'">
+        <div v-if="fieldName === 'type'">
           <IndicatorIcon :class="getRow(itemName, fieldName).color" />
-        </div>
-        <div
-          v-else-if="
-            fieldName === 'organization' && getRow(itemName, fieldName).label
-          "
-        >
-          <Avatar
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).logo"
-            :label="getRow(itemName, fieldName).label"
-            size="xs"
-          />
-        </div>
-        <div v-else-if="fieldName === 'lead_name'">
-          <Avatar
-            v-if="getRow(itemName, fieldName).label"
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).image"
-            :label="getRow(itemName, fieldName).image_label"
-            size="xs"
-          />
-        </div>
-        <div v-else-if="fieldName === 'lead_owner'">
-          <Avatar
-            v-if="getRow(itemName, fieldName).full_name"
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).user_image"
-            :label="getRow(itemName, fieldName).full_name"
-            size="xs"
-          />
         </div>
         <div
           v-if="
@@ -110,7 +80,7 @@
             <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
           </Tooltip>
         </div>
-        <div v-else-if="fieldName === 'sla_status'" class="truncate text-base">
+        <!-- <div v-else-if="fieldName === 'sla_status'" class="truncate text-base">
           <Badge
             v-if="getRow(itemName, fieldName).value"
             :variant="'subtle'"
@@ -118,7 +88,7 @@
             size="md"
             :label="getRow(itemName, fieldName).value"
           />
-        </div>
+        </div> -->
         <div v-else-if="fieldName === '_assign'" class="flex items-center">
           <MultipleAvatar
             :avatars="getRow(itemName, fieldName).label"
@@ -130,7 +100,7 @@
         </div>
       </div>
     </template>
-    <template #actions="{ itemName }">
+    <!-- <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
         <div class="text-gray-600 flex items-center gap-1.5">
           <EmailAtIcon class="h-4 w-4" />
@@ -162,7 +132,7 @@
           <Button icon="plus" variant="ghost" />
         </Dropdown>
       </div>
-    </template>
+    </template> -->
   </KanbanView>
   <DocsListView ref="leadsListView" v-if="leads.data && rows.length" v-model="leads.data.page_length_count"
     v-model:list="leads" :rows="rows" :columns="leads.data.columns" :options="{
@@ -192,13 +162,13 @@
 </template>
 
 <script setup>
-// import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
-// import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
+import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-// import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -381,10 +351,10 @@ const note = ref({
   content: '',
 })
 
-// function showNote(name) {
-//   docname.value = name
-//   showNoteModal.value = true
-// }
+function showNote(name) {
+  docname.value = name
+  showNoteModal.value = true
+}
 
 const showTaskModal = ref(false)
 const task = ref({
@@ -396,8 +366,8 @@ const task = ref({
   status: 'Backlog',
 })
 
-// function showTask(name) {
-//   docname.value = name
-//   showTaskModal.value = true
-// }
+function showTask(name) {
+  docname.value = name
+  showTaskModal.value = true
+}
 </script>

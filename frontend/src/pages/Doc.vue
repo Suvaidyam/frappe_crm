@@ -407,7 +407,7 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: __(route.params.doctype), route: { name: 'Doctype' ,params: { doctype:route.params.doctype }} }]
+  let items = [{ label: __(route.params.doctype), route: { name: 'Doctype' ,params: { doctype:route.params.doctype,viewType:"list" }} }]
   items.push({
     label: lead.data.name || __('Untitled'),
     route: { name: 'Doc', params: { doctype:route.params.doctype,docId: lead.data.name }},

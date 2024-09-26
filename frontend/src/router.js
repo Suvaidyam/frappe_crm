@@ -28,19 +28,19 @@ const routes = [
     component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
     props: true,
   },
-  // {
-  //   alias: '/deals',
-  //   path: '/deals/view/:viewType?',
-  //   name: 'Deals',
-  //   component: () => import('@/pages/Deals.vue'),
-  //   meta: { scrollPos: { top: 0, left: 0 } },
-  // },
-  // {
-  //   path: '/deals/:dealId',
-  //   name: 'Deal',
-  //   component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
-  //   props: true,
-  // },
+  {
+    alias: '/deals',
+    path: '/deals/view/:viewType?',
+    name: 'Deals',
+    component: () => import('@/pages/Deals.vue'),
+    meta: { scrollPos: { top: 0, left: 0 } },
+  },
+  {
+    path: '/deals/:dealId',
+    name: 'Deal',
+    component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
+    props: true,
+  },
   // {
   //   path: '/notes',
   //   name: 'Notes',
@@ -110,7 +110,7 @@ const routes = [
     component: () => import('@/pages/Login.vue'),
   },
   {
-    path: '/doctype/:doctype',
+    path: '/doctype/:doctype/:viewType?',
     name: 'Doctype',
     component: () => import('@/pages/DocList.vue'),
   },

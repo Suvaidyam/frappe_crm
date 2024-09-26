@@ -129,11 +129,11 @@ const links = ref([
     icon: LeadsIcon,
     to: 'Leads',
   },
-  // {
-  //   label: 'Deals',
-  //   icon: DealsIcon,
-  //   to: 'Deals',
-  // },
+  {
+    label: 'Deals',
+    icon: DealsIcon,
+    to: 'Deals',
+  },
   // {
   //   label: 'Contacts',
   //   icon: ContactsIcon,

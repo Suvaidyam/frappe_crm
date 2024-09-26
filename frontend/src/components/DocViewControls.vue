@@ -404,7 +404,7 @@ function getParams() {
   const group_by_field = _view?.group_by_field || 'owner'
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
-  const column_field = _view?.column_field || 'status'
+  const column_field = _view?.column_field || 'type'
   const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
@@ -818,7 +818,7 @@ function loadMoreKanban(columnName) {
 }
 
 function create_or_update_default_view() {
-  if (route.query.view) return
+  // if (route.query.view) return
   view.value.doctype = props.doctype
   call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
